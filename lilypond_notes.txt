@@ -1,0 +1,173 @@
+GNU Lilypond music notation syntax and notes
+
+General:
+--------
+  Case-sensitive
+  Parser looks for whitespace-separation
+  % single line comments
+  %{ block (multi-line)comments %}
+  All lilypond input files should have a \version statement
+
+Version Statement:
+------------------
+  \version "2.20.0"
+
+Basic Input:
+------------
+  Example:
+  --------
+    \version "2.20.0"
+    {
+      c' e' g' e'
+    }
+
+  Pitch:
+  ------
+    Note names are lowercase
+    Octaves are specified with appended apostrophe's.
+    E.g.
+      c,,     % (C1) C three octaves below middle C
+      c,      % (C2) C two octaves below middle C
+      c       % (C3) C below middle C
+      c'      % (C4) Middle C
+      a'      % (A4) A above middle C
+      d''     % (D5) D above C above middle C
+      c'''    % (C6) C two octaves above middle C
+
+    Note names are always absolute (i.e. are not relative to the key
+    signature).
+
+    Accidentals:
+    ------------
+      The syntactical elements for flat and sharp derive from Dutch/German. To
+      indicate a flatted note, append an 'es'.  To indicate a sharped note,
+      append an 'is'.
+
+      E.g.
+        aes   % Ab below middle C
+        cis'' % C# above middle C
+        feses'''8 % Fbb two octaves above middle C, eighth note duration
+
+  Relative Input:
+  ---------------
+    The octave for each note is chosen to be relative to the note prior (w/in
+    the same octave (+/- half-octave) using the 'relative' block.
+
+    \relative { 
+      c' d e f g a b c
+    }
+
+    The first note of the relative block determines the starting note of the
+    melody.  From that point, all subsequent notes are placed relative to the
+    note prior.  To raise a note by an octave relative to that which would have
+    otherwise been assumed, append an apostrophe (or multiple).  To lower a 
+    note by an octave, append a comma (or multiple).
+
+    \relative {
+      c'' d c' d, c d c' d,
+    }
+    
+    In the above example, the melody starts on C above Middle C then goes up by
+    a whole step, then up by a minor seventh, then down by a minor seventh, then
+    repeats.
+
+  Rhythm & Durations:
+  -------------------
+    The duration of a note is indicated by a number following the note name.
+      Number  Note Duration
+      ------  -------------
+      1       Whole Note
+      2       Half Note
+      4       Quarter Note
+      8       Eighth note
+      16      Sixteenth Note
+      32      Thirty-second Note
+
+    If a note duration is not specified, the duration is taken from that of the
+    previous note.
+
+    Dotted Notes:
+    -------------
+      A dotted note is specified by an appended period '.' following the note
+      name.  IMPORTANT! The note duration MUST be specified for a dotted note
+      (i.e. the duration will not be assumed to be that of the prior note)
+
+  Rests:
+  ------
+    Rests function just like any other note name ('a' through 'g') but are
+    represented by the letter 'r' and obviously do not have an associated
+    octave or accidental.
+
+  Time Signature:
+  ---------------
+    The time signature can be set with the \time command.  It has the following
+    syntax:
+      \time BEATS/DIV
+    Where BEATS is the beats per measure and DIV is the duration that gets the
+    beat.  Note that BEATS * DIV = one meaure, always.
+
+    The \time command is placed within an input block and applies to all
+    subsequent input.
+
+  Tempo Markings:
+  ---------------
+    A tempo marking can be indicated with either a string (e.g. "moderato") or
+    a note duration in beats per minute (i.e. quarter note = 120). Both styles
+    are indicated with a \tempo command.  E.g.
+      \tempo "Andante"          % Andante tempo marking
+      \tempo 4. = 96            % Dotted quarter note = 96 bpm
+      \tempo "Presto" 4 = 120   % Presto (quarter note = 120 bpm)
+
+    The \tempo command is placed within an input block and applies to all
+    subsequent input.
+
+  Clef:
+  -----
+    The clef is indicated by the \clef command which can have the following
+    discrete values as arguments:
+      "treble"
+      "alto"
+      "tenor"
+      "bass"
+
+Layout:
+-------
+  Bar Lines:
+  ----------
+    Standard bar lines are inserted automatically each time the end of a
+    measure is reached.  We can manually force bar lines or insert non-
+    standard bar lines with the \bar command.
+
+    Example bar lines:
+      \bar ""         % An invisible bar line (allows a line break w/o a bar line)
+      \bar "|"        % A normal single bar line
+      \bar "."        % A thick (bold) single bar line
+      \bar "||"       & A double bar
+      \bar ".|"       % A double bar with first bar bold (thick)
+      \bar ".."       % A double bar, both bold (thick)
+      \bar "|.|"      % A triple bar, middle one bold (thick)
+      \bar "|."       % A closing bar (end of piece). A double bar with second bar thick
+      \bar ";"        % A dotted bar line
+      \bar "!"        % A dashed bar line
+
+    Note, when determining the placement of line breaks, lilypond attempts to
+    always break at a bar line.  The purpose of the invisible bar line is to
+    provide a potential line break position in the middle of a bar.
+
+  Repeats:
+  --------
+    
+    We can also manually insert various repeat symbols as bar lines, but they
+    will not be recognized by lilypond as a repeated section.
+
+    Example repeat symbols:
+      \bar ".|:"      % Beginning repeat symbol
+      \bar ":|."      % End repeat symbol
+      \bar ":..:"     % End and begin new repeat symbol (double bold)
+      \bar ":|.|:"    % End and begin new repeat symbol (double with center bold)
+      \bar ":|.:"     % See 'repeats.ly'
+      \bar ":.|.:"    % See 'repeats.ly'
+      \bar "[|:"      % See 'repeats.ly'
+      \bar ":|][|:"   % See 'repeats.ly'
+      \bar ":|]"      % See 'repeats.ly'
+       
