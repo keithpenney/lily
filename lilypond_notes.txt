@@ -109,6 +109,13 @@ Basic Input:
     The \time command is placed within an input block and applies to all
     subsequent input.
 
+  Key Signature:
+  --------------
+    The key signature is set with the \key command followed by a pitch (as above)
+    and the optional keyword \major or \minor.
+      \key aes \major
+      \key f \minor     % should produce the same result as above
+
   Tempo Markings:
   ---------------
     A tempo marking can be indicated with either a string (e.g. "moderato") or
