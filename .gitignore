@@ -5,3 +5,6 @@
 # Ignore pdfs too
 *.pdf
 **/*.pdf
+
+# These are generated when Lilypond fails
+tmp-*
