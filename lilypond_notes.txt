@@ -92,6 +92,29 @@ Basic Input:
       name.  IMPORTANT! The note duration MUST be specified for a dotted note
       (i.e. the duration will not be assumed to be that of the prior note)
 
+    Ties:
+    -----
+      Ties are indicated by appending a tilde to the note to start on which the
+      tie starts - the tie automatically continues to the next note.  Ties can
+      make use of the 'last explicit pitch' rule where we just have to indicate
+      the duration of the next note and it takes its pitch from the last explicit
+      pitch.
+      E.g.
+        c4~ 16
+
+    Tuplets:
+    --------
+      Syntax:
+        \tuplet fraction { music }
+      Example: 3 quarter notes in the space of 2
+        \tuplet 3/2 { b4 a g }
+
+    Slurs:
+    ------
+      A slur is indicated by an open parenthesis ( starting immediately after
+      the first note of the slur and ends with a closing parenthesis ) immediately
+      following the last note of the slur.
+
   Rests:
   ------
     Rests function just like any other note name ('a' through 'g') but are
@@ -137,6 +160,17 @@ Basic Input:
       "tenor"
       "bass"
 
+  Staves:
+  -------
+    Changing Staves:
+    ----------------
+      A melody can jump between staves (most useful for piano music).
+      E.g.: \change Staff = "down"  % Where "down" is the name of the staff to go to
+
+      The \autochange command (preceding note input or \relative) will automatically switch
+      between the two staves ONLY if they are named "up" and "down"
+    
+
 Layout:
 -------
   Bar Lines:
@@ -177,4 +211,122 @@ Layout:
       \bar "[|:"      % See 'repeats.ly'
       \bar ":|][|:"   % See 'repeats.ly'
       \bar ":|]"      % See 'repeats.ly'
-       
+
+Polyphony:
+----------
+  Chords:
+  -------
+    To represent chords, simply replace the single note pitch with a collection of
+    pitches within angle brackets <>.
+    CMaj = <c e g>
+    Bb7 dotted half note = <bes' f d aes>
+
+    Pitches within a \relative block are based on the first note of the preceding
+    chord.
+
+    The previous chord can be repeated with the shorthand symbol 'q' (even if other
+    non-chord note have happened since the last chord.
+
+  Simultaneous Expressions:
+  -------------------------
+    Any expressions (i.e. a \relative block) contained in double angle braces {}
+    are considered simultaneous.  This generates an identical result as the 'chord'
+    method described above (in single angle brackets <>), but each voice is written
+    as its own 'melody', which can be more intuitive in certain contexts (i.e. a
+    chorale).
+
+    Note that if two expressions with different rhythms are combined in a
+    simultaneous block (<<>>), it implicitly generates two staves.  Otherwise,
+    both expressions are combined onto one staff.
+
+  Explicit Independent Voices:
+  ----------------------------
+    To include two voices with different rhythms on one staaff, you must explicitly
+    declare multiple voices with the following syntax:
+      \new Staff  <<
+        \new Voice = "voice name"
+          \relative { \voiceOne % ... insert melody for first voice
+            }
+        \new Voice = "other voice name"
+          \relative { \voiceTwo % ... the second voice's melody 
+            }
+      >>
+
+    The Double-Slash Syntax:
+    ------------------------
+      A shorter syntax for explicit independent voices is the double-slash (\\)
+      syntax.  It automatically assigns expressions in order they appear to
+      voices \voiceOne, \voiceTwo, \voiceThree, and \voiceFour and their
+      respective formatting rules.
+
+      <<
+        \relative { ... }   % gets assigned to voiceOne
+        \\
+        \relative { ... }   % gets assigned to voiceTwo
+        \\
+        \relative { ... }   % gets assigned to voiceThree
+      >>
+
+    Voice Ordering:
+    ---------------
+      voiceOne    = Highest voice
+      voiceTwo    = Lowest voice
+      voiceThree  = Second-highest
+      voiceFour   = Second-lowest
+      voiceFive   = Third-highest   % Note, there's no \voiceFive apparently
+      voiceSix    = Third-lowest    % Also no \voiceSix command
+
+Annotation:
+-----------
+  Simple annotation above the staff:
+    ^"This text goes above the previous note"
+
+File Structure:
+---------------
+\book {                 % Topmost structure - each \book generates its own output file
+  \score {              % A set of scores is combined into a book; each can be, i.e. a movement
+    \new Staff {        % 
+      \new Voice {
+        { c'4 d' e'2 }
+      }
+    }
+    \layout { }
+  }
+  \paper { }
+  \header { }
+}
+
+Titles and Headers:
+-------------------
+  \book
+  -----
+    Each \book block within a single file produces a separate output file.
+    A \book can optionally be divided into separate \bookpart sections, each with its own
+    formatting rules.
+
+  \header
+  -------
+    \header {
+        % The following fields are centered
+      dedication = "Dedication"
+      title = "Title"
+      subtitle = "Subtitle"
+      subsubtitle = "Subsubtitle"
+        % The following fields are evenly spread on one line
+        % the field "instrument" also appears on following pages
+      instrument = \markup \with-color #green "Instrument"
+      poet = "Poet"
+      composer = "Composer"
+        % The following fields are placed at opposite ends of the same line
+      meter = "Meter"
+      arranger = "Arranger"
+        % The following fields are centered at the bottom
+      tagline = "The tagline goes at the bottom of the last page"
+      copyright = "The copyright goes at the bottom of the first page"
+    }
+
+Variables:
+----------
+  Variables can be defined and later re-expanded.
+  Define: foo = { c4 d e d }
+  Expand: \foo
